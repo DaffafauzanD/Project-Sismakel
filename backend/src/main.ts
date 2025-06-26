@@ -16,6 +16,10 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
+  // Add cookie parser middleware
+  const cookieParser = require('cookie-parser');
+  app.use(cookieParser());
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -27,16 +31,33 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // ✅ Swagger Setup
+  // ✅ Swagger Setup with Authentication
   const config = new DocumentBuilder()
     .setTitle('Sismakel API Documentation')
-    .setDescription('API documentation for Sismakel application')
+    .setDescription('API documentation for Sismakel application with JWT Authentication')
     .setVersion('1.0')
-    .addBearerAuth() // ✅ kalau pakai token
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth', // This name here is important for references
+    )
+    .addTag('Authentication', 'Authentication endpoints')
+    .addTag('Users', 'User management endpoints')
+    .addTag('Products', 'Product management endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document); // ⬅️ Dokumentasi di /docs
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
   const port = environment.port;
   await app.listen(port);
