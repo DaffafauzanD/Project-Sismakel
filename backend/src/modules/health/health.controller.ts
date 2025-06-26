@@ -18,7 +18,7 @@ export class HealthController {
   @Get('openapi.json')
   async getOpenApiSpec(@Res() res: Response) {
     try {
-      const openApiPath = path.join(__dirname, '../../../openapi.json');
+      const openApiPath = path.resolve(process.cwd(), 'src/openapi.json');
       const openApiContent = fs.readFileSync(openApiPath, 'utf8');
       const spec = JSON.parse(openApiContent);
       
