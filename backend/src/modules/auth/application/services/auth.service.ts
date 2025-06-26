@@ -34,11 +34,14 @@ export class AuthService implements AuthServiceInterface {
     // Get role name from database
     const role = await this.getRoleName(user.id_role);
 
+    const permission = await this.getPermission(user.id_role);
+
     // Generate JWT token
     const payload: JwtPayload = {
       sub: user.id,
       username: user.username,
       role: role,
+      permission: permission,
     };
 
     const access_token = this.jwtService.sign(payload);
@@ -49,6 +52,7 @@ export class AuthService implements AuthServiceInterface {
         id: user.id,
         username: user.username,
         role: role,
+        permission: permission,
       },
     };
   }
@@ -69,6 +73,20 @@ export class AuthService implements AuthServiceInterface {
       return role?.name || 'user';
     } catch (error) {
       return 'user';
+    }
+  }
+
+  private async getPermission(roleId: string): Promise<string[]> {
+    try {
+      const rolePermissions = await this.prisma.mST_ROLE_PERMISSION.findMany({
+        where: { id_role: roleId },
+        include: {
+          MST_PERMISSION: true,
+        },
+      });
+      return rolePermissions.map(rp => rp.MST_PERMISSION.name);
+    } catch (error) {
+      return [];
     }
   }
 } 

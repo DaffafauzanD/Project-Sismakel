@@ -2,6 +2,7 @@ export interface JwtPayload {
   sub: string;
   username: string;
   role: string;
+  permission?: string[];
   iat?: number;
   exp?: number;
 }
@@ -12,6 +13,7 @@ export interface LoginResponse {
     id: string;
     username: string;
     role: string;
+    permission?: string[];
   };
 }
 

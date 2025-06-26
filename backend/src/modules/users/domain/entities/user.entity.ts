@@ -9,8 +9,8 @@ export class User {
   update_at?: Date;
   create_by?: string;
   update_by?: string;
-  // Optional: relasi ke MST_ROLE jika ingin eager load
-  // MST_ROLE?: any;
+  role?: any;
+  rolePermission?: any;
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
