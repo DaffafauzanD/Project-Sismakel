@@ -12,6 +12,20 @@ async function bootstrap() {
   app.enableCors({
     origin: environment.cors.origin,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+      'Accept',
+      'Authorization',
+      'Content-Type',
+      'X-Requested-With',
+      'Range',
+    ],
+    exposedHeaders: [
+      'Accept-Ranges',
+      'Content-Encoding',
+      'Content-Length',
+      'Content-Range',
+    ],
   });
 
   app.setGlobalPrefix('api/v1');

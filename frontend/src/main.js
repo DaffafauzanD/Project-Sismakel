@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from '@/App.vue'
 import { registerPlugins } from '@core/utils/plugins'
+import { useAuthStore } from '@/stores/auth'
 
 // Styles
 import '@core/scss/template/index.scss'
@@ -13,5 +14,9 @@ const app = createApp(App)
 // Register plugins
 registerPlugins(app)
 
-// Mount vue app
+// Initialize auth state before mounting
 app.mount('#app')
+
+// Initialize auth after app is mounted
+const authStore = useAuthStore()
+authStore.initializeAuth()

@@ -9,6 +9,8 @@ import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
 definePage({
   meta: {
@@ -17,6 +19,9 @@ definePage({
   },
 })
 
+const authStore = useAuthStore()
+const router = useRouter()
+
 const form = ref({
   email: '',
   password: '',
@@ -24,6 +29,40 @@ const form = ref({
 })
 
 const isPasswordVisible = ref(false)
+const isLoading = ref(false)
+const errorMessage = ref('')
+
+const handleLogin = async () => {
+  if (!form.value.email || !form.value.password) {
+    errorMessage.value = 'Please fill in all fields'
+    return
+  }
+
+  isLoading.value = true
+  errorMessage.value = ''
+
+  try {
+    const result = await authStore.login({
+      username: form.value.email, // Backend menggunakan username
+      password: form.value.password,
+    })
+
+    console.log('Login result:', result);
+
+    if (result.success) {
+      // Redirect berdasarkan role atau ke dashboard
+      const redirectTo = authStore.hasRole('admin') ? '/admin' : '/dashboard'
+      await router.push(redirectTo)
+    } else {
+      errorMessage.value = result.message || 'Login failed'
+    }
+  } catch (error) {
+    errorMessage.value = 'An error occurred during login'
+    console.error('Login error:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
 </script>
@@ -87,7 +126,15 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
           </p>
         </VCardText>
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VForm @submit.prevent="handleLogin">
+            <!-- Error Alert -->
+            <VAlert
+              v-if="errorMessage"
+              type="error"
+              class="mb-4"
+              :text="errorMessage"
+            />
+            
             <VRow>
               <!-- email -->
               <VCol cols="12">
@@ -95,8 +142,10 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                   v-model="form.email"
                   autofocus
                   label="Email or Username"
-                  type="email"
+                  type="text"
                   placeholder="johndoe@email.com"
+                  :disabled="isLoading"
+                  required
                 />
               </VCol>
 
@@ -109,6 +158,8 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                   :type="isPasswordVisible ? 'text' : 'password'"
                   autocomplete="password"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :disabled="isLoading"
+                  required
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
@@ -116,6 +167,7 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                   <VCheckbox
                     v-model="form.remember"
                     label="Remember me"
+                    :disabled="isLoading"
                   />
                   <a
                     class="text-primary"
@@ -128,6 +180,8 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                 <VBtn
                   block
                   type="submit"
+                  :loading="isLoading"
+                  :disabled="isLoading"
                 >
                   Login
                 </VBtn>
