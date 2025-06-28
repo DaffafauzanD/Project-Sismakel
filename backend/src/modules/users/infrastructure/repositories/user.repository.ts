@@ -18,15 +18,7 @@ export class UserRepository implements IUserRepository {
         skip,
         take: limit,
         include: {
-          MST_ROLE: {
-            include: {
-              MST_ROLE_PERMISSION: {
-                include: {
-                  MST_PERMISSION: true,
-                },
-              },
-            },
-          },
+          MST_ROLE: true,
         },
       }),
       this.prisma.mST_USER.count(),
@@ -111,19 +103,6 @@ export class UserRepository implements IUserRepository {
 function mapUserPrismaToEntity(u: any): User {
   return new User({
     ...u,
-    role: u.MST_ROLE ? {
-      id: u.MST_ROLE.id,
-      name: u.MST_ROLE.name,
-      rolePermission: u.MST_ROLE.MST_ROLE_PERMISSION ? u.MST_ROLE.MST_ROLE_PERMISSION.map((rp: any) => ({
-        id: rp.id,
-        id_role: rp.id_role,
-        id_permission: rp.id_permission,
-        permission: {
-          id: rp.MST_PERMISSION.id,
-          name: rp.MST_PERMISSION.name,
-        },
-      })) : [],
-    } : undefined,
     create_at: u.create_at ?? undefined,
     update_at: u.update_at ?? undefined,
     create_by: u.create_by ?? undefined,
