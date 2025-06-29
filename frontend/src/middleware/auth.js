@@ -1,33 +1,6 @@
-import { setupLayouts } from 'virtual:meta-layouts'
-import { createRouter, createWebHistory } from 'vue-router/auto'
 import { useAuthStore } from '@/stores/auth'
 
-function recursiveLayouts(route) {
-  if (route.children) {
-    for (let i = 0; i < route.children.length; i++)
-      route.children[i] = recursiveLayouts(route.children[i])
-    
-    return route
-  }
-  
-  return setupLayouts([route])[0]
-}
-
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  scrollBehavior(to) {
-    if (to.hash)
-      return { el: to.hash, behavior: 'smooth', top: 60 }
-    
-    return { top: 0 }
-  },
-  extendRoutes: pages => [
-    ...[...pages].map(route => recursiveLayouts(route)),
-  ],
-})
-
-// Navigation guards
-router.beforeEach(async (to, from, next) => {
+export default defineNuxtRouteMiddleware((to) => {
   const authStore = useAuthStore()
   
   // Check if route requires authentication
@@ -36,16 +9,17 @@ router.beforeEach(async (to, from, next) => {
   
   // If route is public, allow access
   if (isPublic) {
-    return next()
+    return
   }
   
   // If route requires auth but user is not authenticated
   if (requiresAuth && !authStore.isAuthenticated) {
     // Try to verify token from cookie
-    const isValid = await authStore.verifyToken()
+    const isValid = authStore.verifyToken()
+    console.log("isValid ::", isValid);
     if (!isValid) {
       // Redirect to login with return URL
-      return next({
+      return navigateTo({
         path: '/login',
         query: { redirect: to.fullPath }
       })
@@ -58,7 +32,7 @@ router.beforeEach(async (to, from, next) => {
     const hasRequiredRole = requiredRoles.includes(authStore.userRole)
     if (!hasRequiredRole) {
       // Redirect to unauthorized page or show error
-      return next({
+      return navigateTo({
         path: '/unauthorized',
         query: { 
           message: 'You do not have the required role to access this page',
@@ -77,7 +51,7 @@ router.beforeEach(async (to, from, next) => {
     )
     if (!hasRequiredPermission) {
       // Redirect to unauthorized page or show error
-      return next({
+      return navigateTo({
         path: '/unauthorized',
         query: { 
           message: 'You do not have the required permissions to access this page',
@@ -90,13 +64,6 @@ router.beforeEach(async (to, from, next) => {
   
   // If authenticated user tries to access login page, redirect to dashboard
   if (to.path === '/login' && authStore.isAuthenticated) {
-    return next({ path: '/protected/dashboard' })
+    return navigateTo({ path: '/protected/dashboard' })
   }
-  
-  next()
-})
-
-export { router }
-export default function (app) {
-  app.use(router)
-}
+}) 

@@ -1,8 +1,9 @@
 import { createFetch } from '@vueuse/core'
 import { destr } from 'destr'
+import { getAccessToken } from '@/utils/cookies'
 
 export const useApi = createFetch({
-  baseUrl: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseUrl: import.meta.env.VITE_API_BASE_URL || '/v1',
   fetchOptions: {
     headers: {
       Accept: 'application/json',
@@ -11,7 +12,7 @@ export const useApi = createFetch({
   options: {
     refetch: true,
     async beforeFetch({ options }) {
-      const accessToken = useCookie('accessToken').value
+      const accessToken = getAccessToken()
       if (accessToken) {
         options.headers = {
           ...options.headers,

@@ -17,8 +17,10 @@ definePage({
   },
 })
 
+const { login, isLoading, error } = useAuth()
+
 const form = ref({
-  email: '',
+  username: '',
   password: '',
   remember: false,
 })
@@ -26,6 +28,41 @@ const form = ref({
 const isPasswordVisible = ref(false)
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
+
+// Form validation
+const errors = ref({})
+const isValid = computed(() => {
+  return form.value.username && form.value.password && form.value.password.length >= 6
+})
+
+const validateForm = () => {
+  errors.value = {}
+  
+  if (!form.value.username) {
+    errors.value.username = 'Username is required'
+  }
+  
+  if (!form.value.password) {
+    errors.value.password = 'Password is required'
+  } else if (form.value.password.length < 6) {
+    errors.value.password = 'Password must be at least 6 characters'
+  }
+  
+  return Object.keys(errors.value).length === 0
+}
+
+const handleLogin = async () => {
+  if (!validateForm()) return
+  
+  try {
+    await login({
+      username: form.value.username,
+      password: form.value.password,
+    })
+  } catch (err) {
+    console.error('Login failed:', err)
+  }
+}
 </script>
 
 <template>
@@ -86,17 +123,32 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
             Please sign-in to your account and start the adventure
           </p>
         </VCardText>
+        
+        <!-- Error Alert -->
+        <VCardText v-if="error">
+          <VAlert
+            type="error"
+            variant="tonal"
+            closable
+            @click:close="error = null"
+          >
+            {{ error }}
+          </VAlert>
+        </VCardText>
+        
         <VCardText>
-          <VForm @submit.prevent="() => {}">
+          <VForm @submit.prevent="handleLogin">
             <VRow>
-              <!-- email -->
+              <!-- username -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="form.email"
+                  v-model="form.username"
                   autofocus
-                  label="Email or Username"
-                  type="email"
-                  placeholder="johndoe@email.com"
+                  label="Username"
+                  type="text"
+                  placeholder="Enter your username"
+                  :error-messages="errors.username"
+                  :disabled="isLoading"
                 />
               </VCol>
 
@@ -107,8 +159,10 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                   label="Password"
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  autocomplete="password"
+                  autocomplete="current-password"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :error-messages="errors.password"
+                  :disabled="isLoading"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
 
@@ -116,6 +170,7 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                   <VCheckbox
                     v-model="form.remember"
                     label="Remember me"
+                    :disabled="isLoading"
                   />
                   <a
                     class="text-primary"
@@ -128,8 +183,10 @@ const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
                 <VBtn
                   block
                   type="submit"
+                  :loading="isLoading"
+                  :disabled="!isValid"
                 >
-                  Login
+                  {{ isLoading ? 'Signing in...' : 'Login' }}
                 </VBtn>
               </VCol>
 

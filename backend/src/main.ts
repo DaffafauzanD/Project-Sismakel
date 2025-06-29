@@ -9,9 +9,21 @@ import { environment } from './config/environment.config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // CORS Configuration
   app.enableCors({
     origin: environment.cors.origin,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization',
+      'Cache-Control',
+      'Pragma',
+    ],
+    exposedHeaders: ['Set-Cookie'],
   });
 
   app.setGlobalPrefix('api/v1');
@@ -63,5 +75,6 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`🚀 App running at: http://localhost:${port}`);
   console.log(`📚 Docs: http://localhost:${port}/docs`);
+  console.log(`🌐 CORS Origins:`, environment.cors.origin);
 }
 bootstrap();

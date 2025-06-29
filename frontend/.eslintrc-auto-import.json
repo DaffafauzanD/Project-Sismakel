@@ -359,6 +359,26 @@
     "watchThrottled": true,
     "watchTriggerable": true,
     "watchWithFilter": true,
-    "whenever": true
+    "whenever": true,
+    "useAuth": true,
+    "useConfig": true,
+    "COOKIE_NAMES": true,
+    "clearAllCookies": true,
+    "clearAuthCookies": true,
+    "getAccessToken": true,
+    "getLanguage": true,
+    "getRefreshToken": true,
+    "getThemeMode": true,
+    "getUserPreferences": true,
+    "isAuthenticated": true,
+    "removeAccessToken": true,
+    "removeRefreshToken": true,
+    "setAccessToken": true,
+    "setLanguage": true,
+    "setRefreshToken": true,
+    "setThemeMode": true,
+    "setUserPreferences": true,
+    "getAllCookies": true,
+    "hasCookie": true
   }
 }

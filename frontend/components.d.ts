@@ -19,6 +19,7 @@ declare module 'vue' {
     AppCombobox: typeof import('./src/@core/components/app-form-elements/AppCombobox.vue')['default']
     AppDateTimePicker: typeof import('./src/@core/components/app-form-elements/AppDateTimePicker.vue')['default']
     AppDrawerHeaderSection: typeof import('./src/@core/components/AppDrawerHeaderSection.vue')['default']
+    AppHeader: typeof import('./src/components/AppHeader.vue')['default']
     AppLoadingIndicator: typeof import('./src/components/AppLoadingIndicator.vue')['default']
     AppPricing: typeof import('./src/components/AppPricing.vue')['default']
     AppSearchHeader: typeof import('./src/components/AppSearchHeader.vue')['default']
