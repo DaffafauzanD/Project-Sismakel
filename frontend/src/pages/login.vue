@@ -60,7 +60,7 @@ const handleLogin = async () => {
       password: form.value.password,
     })
   } catch (err) {
-    console.error('Login failed:', err)
+    // Error is already handled by the auth store
   }
 }
 </script>

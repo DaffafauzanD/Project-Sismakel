@@ -15,7 +15,7 @@ registerPlugins(app)
 
 // Initialize authentication
 const authStore = useAuthStore()
-authStore.initAuth()
+await authStore.initAuth()
 
 // Mount vue app
 app.mount('#app')

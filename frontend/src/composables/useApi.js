@@ -31,7 +31,7 @@ export const useApi = createFetch({
         parsedData = destr(data)
       }
       catch (error) {
-        console.error(error)
+        // Silently handle parsing errors
       }
       
       return { data: parsedData, response }

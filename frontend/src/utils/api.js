@@ -4,6 +4,7 @@ import { getAccessToken } from '@/utils/cookies'
 
 export const $api = ofetch.create({
   baseURL: useConfig().apiBaseUrl.value || '/v1',
+  credentials: 'include',
   async onRequest({ options }) {
     const accessToken = getAccessToken()
     if (accessToken) {

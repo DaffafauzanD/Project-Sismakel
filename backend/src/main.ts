@@ -73,8 +73,5 @@ async function bootstrap() {
 
   const port = environment.port;
   await app.listen(port);
-  console.log(`🚀 App running at: http://localhost:${port}`);
-  console.log(`📚 Docs: http://localhost:${port}/docs`);
-  console.log(`🌐 CORS Origins:`, environment.cors.origin);
 }
 bootstrap();

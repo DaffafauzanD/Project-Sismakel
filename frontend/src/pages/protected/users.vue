@@ -86,11 +86,11 @@ const getStatusColor = (status) => {
 }
 
 const handleEditUser = (user) => {
-  console.log('Edit user:', user)
+  // TODO: Implement user edit functionality
 }
 
 const handleDeleteUser = (user) => {
-  console.log('Delete user:', user)
+  // TODO: Implement user delete functionality
 }
 
 const handleToggleStatus = (user) => {

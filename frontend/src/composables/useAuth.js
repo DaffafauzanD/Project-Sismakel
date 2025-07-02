@@ -9,9 +9,10 @@ export const useAuth = () => {
   const login = async (credentials) => {
     try {
       const response = await authStore.login(credentials)
-      console.log("response ::", response)
+      
       // Redirect to dashboard or intended page
-      const redirectTo = router.currentRoute.value.query.redirect || '/'
+      const redirectTo = router.currentRoute.value.query.redirect || '/protected/dashboard'
+      
       await router.push(redirectTo)
       
       return response
@@ -23,6 +24,7 @@ export const useAuth = () => {
   // Logout function with redirect
   const logout = async () => {
     await authStore.logout()
+    
     // Redirect to login
     await router.push('/login')
   }

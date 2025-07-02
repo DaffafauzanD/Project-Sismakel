@@ -111,7 +111,17 @@ const deleteCookieValue = (name, options = {}) => {
  * @returns {string|null} Access token or null if not found
  */
 export const getAccessToken = () => {
-  return getCookieValue(COOKIE_NAMES.ACCESS_TOKEN)
+  // Try debug cookie first in development
+  if (import.meta.env.DEV) {
+    const debugToken = getCookieValue(COOKIE_NAMES.ACCESS_TOKEN + '_debug')
+    if (debugToken) {
+      return debugToken
+    }
+  }
+  
+  // Try regular cookie
+  const token = getCookieValue(COOKIE_NAMES.ACCESS_TOKEN)
+  return token
 }
 
 /**
@@ -162,7 +172,6 @@ export const getUserPreferences = () => {
     try {
       return JSON.parse(preferences)
     } catch (error) {
-      console.error('Error parsing user preferences:', error)
       return null
     }
   }
@@ -183,12 +192,12 @@ export const setUserPreferences = (preferences) => {
  * @returns {string} Theme mode (light, dark, auto)
  */
 export const getThemeMode = () => {
-  return getCookieValue(COOKIE_NAMES.THEME_MODE) || 'auto'
+  return getCookieValue(COOKIE_NAMES.THEME_MODE) || 'light'
 }
 
 /**
  * Set theme mode in cookie
- * @param {string} mode - Theme mode (light, dark, auto)
+ * @param {string} mode - Theme mode
  */
 export const setThemeMode = (mode) => {
   setCookieValue(COOKIE_NAMES.THEME_MODE, mode, USER_PREFERENCES_OPTIONS)
@@ -199,7 +208,7 @@ export const setThemeMode = (mode) => {
  * @returns {string} Language code
  */
 export const getLanguage = () => {
-  return getCookieValue(COOKIE_NAMES.LANGUAGE) || 'id'
+  return getCookieValue(COOKIE_NAMES.LANGUAGE) || 'en'
 }
 
 /**
@@ -216,23 +225,27 @@ export const setLanguage = (language) => {
 export const clearAuthCookies = () => {
   removeAccessToken()
   removeRefreshToken()
+  // Also clear debug cookie if it exists
+  deleteCookieValue(COOKIE_NAMES.ACCESS_TOKEN + '_debug', { path: '/' })
 }
 
 /**
  * Clear all cookies
  */
 export const clearAllCookies = () => {
-  Object.values(COOKIE_NAMES).forEach(cookieName => {
+  const cookies = parseCookies(document.cookie)
+  Object.keys(cookies).forEach(cookieName => {
     deleteCookieValue(cookieName, { path: '/' })
   })
 }
 
 /**
- * Check if user is authenticated by checking access token
+ * Check if user is authenticated based on token presence
  * @returns {boolean} True if authenticated
  */
 export const isAuthenticated = () => {
-  return !!getAccessToken()
+  const token = getAccessToken()
+  return !!token
 }
 
 /**

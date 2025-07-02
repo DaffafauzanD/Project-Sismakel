@@ -81,6 +81,9 @@ export default defineConfig({
     }),
     svgLoader(),
   ],
+  server:{
+    port: 3001
+  },
   define: { 'process.env': {} },
   resolve: {
     alias: {

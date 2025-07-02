@@ -40,13 +40,27 @@ export class AuthController {
   ): Promise<LoginResponseDto> {
     const result = await this.authService.login(loginDto);
 
-    // Set JWT token in httpOnly cookie
-    response.cookie('access_token', result.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // true in production
-      sameSite: 'strict',
+    // Set JWT token in cookie
+    const cookieOptions = {
+      httpOnly: process.env.NODE_ENV === 'production', // false in development
+      secure: process.env.NODE_ENV === 'production', // false in development
+      sameSite: (process.env.NODE_ENV === 'production' ? 'strict' : 'lax') as 'strict' | 'lax',
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    });
+      path: '/', // Ensure cookie is available for all paths
+    };
+    
+    response.cookie('access_token', result.access_token, cookieOptions);
+
+    // Also set a non-httpOnly cookie for development debugging
+    if (process.env.NODE_ENV !== 'production') {
+      response.cookie('access_token_debug', result.access_token, {
+        httpOnly: false,
+        secure: false,
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/',
+      });
+    }
 
     return result;
   }
@@ -63,8 +77,9 @@ export class AuthController {
     description: 'Logout berhasil',
   })
   async logout(@Res({ passthrough: true }) response: Response) {
-    // Clear the JWT cookie
-    response.clearCookie('access_token');
+    // Clear the JWT cookies
+    response.clearCookie('access_token', { path: '/' });
+    response.clearCookie('access_token_debug', { path: '/' });
     
     return {
       message: 'Logout berhasil',

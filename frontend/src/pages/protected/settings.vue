@@ -37,7 +37,7 @@ const settings = ref({
 
 const handleSaveSettings = () => {
   // Here you would typically save settings to the backend
-  console.log('Saving settings:', settings.value)
+  // TODO: Implement settings save functionality
 }
 
 const handleResetSettings = () => {

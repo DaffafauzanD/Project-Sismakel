@@ -37,18 +37,6 @@ export const useConfig = () => {
   const isProduction = computed(() => !isDev.value)
   const isStaging = computed(() => !isDev.value && !isProduction.value)
   
-  // Log configuration in development
-  if (isDev.value && isDebug.value) {
-    console.log('🔧 Environment Configuration:', {
-      apiBaseUrl: apiBaseUrl.value,
-      appTitle: appTitle.value,
-      isDev: isDev.value,
-      enableAuth: enableAuth.value,
-      themeMode: themeMode.value,
-      defaultLocale: defaultLocale.value
-    })
-  }
-  
   return {
     // API
     apiBaseUrl,

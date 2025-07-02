@@ -18,7 +18,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Computed properties
   const userRole = computed(() => user.value?.role || null)
-  const userPermissions = computed(() => user.value?.permission || [])
+  const userPermissions = computed(() => {
+    // Handle both permission (from JWT) and permissions (from API)
+    const permissions = user.value?.permission || user.value?.permissions || []
+    return Array.isArray(permissions) ? permissions : []
+  })
   const isAdmin = computed(() => userRole.value === 'ADMIN')
   const isUser = computed(() => userRole.value === 'user')
   const isModerator = computed(() => userRole.value === 'moderator')
@@ -49,17 +53,51 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Initialize auth state from token
-  const initAuth = () => {
+  const initAuth = async () => {
     const token = getAccessToken()
     if (token) {
       try {
         const decoded = jwtDecode(token)
-        user.value = decoded
+        
+        // Check if token is expired
+        const currentTime = Date.now() / 1000
+        if (decoded.exp && decoded.exp < currentTime) {
+          logout()
+          return
+        }
+        
+        // Set user data from JWT
+        user.value = {
+          id: decoded.sub,
+          username: decoded.username,
+          role: decoded.role,
+          permission: decoded.permission || [],
+        }
         isAuthenticated.value = true
       } catch (error) {
-        console.error('Invalid token:', error)
         logout()
       }
+    } else {
+      // Ensure state is clean
+      user.value = null
+      isAuthenticated.value = false
+    }
+  }
+
+  // Refresh auth state from server
+  const refreshAuth = async () => {
+    try {
+      const response = await $api('/auth/profile', {
+        method: 'GET',
+      })
+      
+      user.value = response.user
+      isAuthenticated.value = true
+      
+      return true
+    } catch (err) {
+      logout()
+      return false
     }
   }
 
@@ -74,17 +112,25 @@ export const useAuthStore = defineStore('auth', () => {
         body: credentials,
       })
 
-      // Set user data
-      user.value = response.user
-      isAuthenticated.value = true
-
       // Token is automatically set in cookie by backend
       // We can decode it to get user info
       if (response.access_token) {
         const decoded = jwtDecode(response.access_token)
-        user.value = decoded
+        
+        // Update user data with JWT payload
+        user.value = {
+          id: decoded.sub,
+          username: decoded.username,
+          role: decoded.role,
+          permission: decoded.permission || [],
+        }
+        isAuthenticated.value = true
+        
         // Also set token in client-side cookie for consistency
         setAccessToken(response.access_token)
+        
+        // Refresh auth state from server to ensure consistency
+        await refreshAuth()
       }
 
       return response
@@ -104,7 +150,7 @@ export const useAuthStore = defineStore('auth', () => {
         method: 'POST',
       })
     } catch (err) {
-      console.error('Logout error:', err)
+      // Ignore logout errors
     } finally {
       // Clear local state
       user.value = null
@@ -126,12 +172,13 @@ export const useAuthStore = defineStore('auth', () => {
       })
       
       if (response.valid) {
+        // Update user data from verification response
         user.value = response.user
         isAuthenticated.value = true
+        
         return true
       }
     } catch (err) {
-      console.error('Token verification failed:', err)
       logout()
       return false
     }
@@ -147,7 +194,6 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = response.user
       return response.user
     } catch (err) {
-      console.error('Failed to get profile:', err)
       throw err
     }
   }
@@ -158,25 +204,25 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     isLoading,
     error,
-    accessToken: computed(() => getAccessToken()),
-
+    
     // Computed
     userRole,
     userPermissions,
     isAdmin,
     isUser,
     isModerator,
-
+    
     // Methods
-    login,
-    logout,
-    verifyToken,
-    getProfile,
-    initAuth,
     hasPermission,
     hasAnyPermission,
     hasAllPermissions,
     hasRole,
     hasAnyRole,
+    initAuth,
+    refreshAuth,
+    login,
+    logout,
+    verifyToken,
+    getProfile,
   }
 }) 

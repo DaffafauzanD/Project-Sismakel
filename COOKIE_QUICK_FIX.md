@@ -211,3 +211,141 @@ Jika masih mengalami masalah:
 **Status**: ✅ Fixed dengan Native Browser Cookie API
 **Dependencies**: Tidak ada package tambahan yang diperlukan
 **Compatibility**: Semua browser modern 
+
+# Cookie Issue Quick Fix
+
+## 🚨 Masalah yang Ditemukan
+
+Ketika melakukan login dari frontend, cookie tidak ter-set di browser, tetapi ketika melakukan test langsung ke endpoint `/api/v1/auth/login`, cookie langsung ter-set.
+
+## 🔍 Analisis Masalah
+
+### Root Cause
+Masalah utama adalah pada konfigurasi `$api` di frontend yang menggunakan `ofetch`. Secara default, `ofetch` tidak mengirimkan `credentials: 'include'`, yang diperlukan agar browser menyimpan cookie yang dikirim dari server.
+
+### Perbedaan Behavior
+- **Test langsung ke endpoint**: Menggunakan `fetch` dengan `credentials: 'include'` ✅
+- **Login dari frontend**: Menggunakan `ofetch` tanpa `credentials: 'include'` ❌
+
+## ✅ Solusi yang Diterapkan
+
+### 1. Frontend Fix - `frontend/src/utils/api.js`
+
+```javascript
+export const $api = ofetch.create({
+  baseURL: useConfig().apiBaseUrl.value || '/v1',
+  credentials: 'include', // ✅ Added this line
+  async onRequest({ options }) {
+    const accessToken = getAccessToken()
+    if (accessToken) {
+      options.headers.append('Authorization', `Bearer ${accessToken}`)
+    }
+  },
+  // ... rest of config
+})
+```
+
+### 2. Backend Fix - `backend/src/modules/auth/presentation/auth.controller.ts`
+
+```typescript
+// Set JWT token in cookie
+const cookieOptions = {
+  httpOnly: process.env.NODE_ENV === 'production', // false in development
+  secure: process.env.NODE_ENV === 'production', // false in development
+  sameSite: (process.env.NODE_ENV === 'production' ? 'strict' : 'lax') as 'strict' | 'lax', // ✅ Fixed TypeScript
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  path: '/', // Ensure cookie is available for all paths
+};
+```
+
+## 🧪 Testing
+
+### Test Script
+Gunakan script `frontend/test-cookie-fix.js` untuk memverifikasi fix:
+
+```javascript
+// Jalankan di browser console
+// 1. Check cookies
+testCookies()
+
+// 2. Test API call
+testApiCall()
+
+// 3. Test login (uncomment jika perlu)
+// testLogin()
+```
+
+### Manual Testing
+1. Login melalui frontend
+2. Buka browser DevTools → Application → Cookies
+3. Verifikasi cookie `access_token` dan `access_token_debug` ter-set
+4. Test akses ke protected route
+
+## 🔧 Konfigurasi yang Diperlukan
+
+### Frontend Environment
+```bash
+# frontend/.env
+VITE_API_BASE_URL=http://localhost:3000/api/v1
+```
+
+### Backend Environment
+```bash
+# backend/.env
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173,http://localhost:3001,http://127.0.0.1:5173
+```
+
+## 📋 Checklist Verifikasi
+
+- [ ] Frontend menggunakan `credentials: 'include'` dalam `$api`
+- [ ] Backend CORS dikonfigurasi dengan `credentials: true`
+- [ ] Cookie options di backend sesuai untuk development
+- [ ] Environment variables dikonfigurasi dengan benar
+- [ ] Test login berhasil dan cookie ter-set
+- [ ] Test akses protected route berhasil
+
+## 🚀 Deployment Notes
+
+### Development
+- `httpOnly: false` - Cookie dapat diakses via JavaScript
+- `secure: false` - Cookie dikirim via HTTP
+- `sameSite: 'lax'` - Cookie dikirim untuk cross-site requests
+
+### Production
+- `httpOnly: true` - Cookie hanya dapat diakses via HTTP
+- `secure: true` - Cookie hanya dikirim via HTTPS
+- `sameSite: 'strict'` - Cookie hanya dikirim untuk same-site requests
+
+## 🔍 Troubleshooting
+
+### Jika cookie masih tidak ter-set:
+
+1. **Check CORS Configuration**
+   ```javascript
+   // Backend main.ts
+   app.enableCors({
+     origin: environment.cors.origin,
+     credentials: true, // ✅ Must be true
+     // ...
+   });
+   ```
+
+2. **Check Network Tab**
+   - Pastikan request login mengirim `Cookie` header
+   - Pastikan response login mengirim `Set-Cookie` header
+
+3. **Check Browser Console**
+   - Pastikan tidak ada CORS errors
+   - Pastikan tidak ada cookie-related warnings
+
+4. **Check Environment Variables**
+   - Pastikan `VITE_API_BASE_URL` benar
+   - Pastikan `CORS_ORIGIN` mencakup frontend URL
+
+## 📚 Referensi
+
+- [MDN - Credentials](https://developer.mozilla.org/en-US/docs/Web/API/fetch#credentials)
+- [MDN - SameSite Cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#samesite_attribute)
+- [NestJS CORS](https://docs.nestjs.com/security/cors)
+- [Express Cookie Parser](https://expressjs.com/en/resources/middleware/cookie-parser.html) 

@@ -28,7 +28,7 @@ const handleEdit = () => {
 
 const handleSave = () => {
   // Here you would typically save the profile data to the backend
-  console.log('Saving profile:', profileData.value)
+  // TODO: Implement profile save functionality
   isEditing.value = false
 }
 

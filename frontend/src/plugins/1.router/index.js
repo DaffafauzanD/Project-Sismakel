@@ -41,14 +41,19 @@ router.beforeEach(async (to, from, next) => {
   
   // If route requires auth but user is not authenticated
   if (requiresAuth && !authStore.isAuthenticated) {
-    // Try to verify token from cookie
-    const isValid = await authStore.verifyToken()
-    if (!isValid) {
-      // Redirect to login with return URL
-      return next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      })
+    // Try to initialize auth from token first
+    await authStore.initAuth()
+    
+    // If still not authenticated, try to verify token from server
+    if (!authStore.isAuthenticated) {
+      const isValid = await authStore.verifyToken()
+      if (!isValid) {
+        // Redirect to login with return URL
+        return next({
+          path: '/login',
+          query: { redirect: to.fullPath }
+        })
+      }
     }
   }
   
@@ -56,6 +61,7 @@ router.beforeEach(async (to, from, next) => {
   const requiredRoles = to.meta?.roles
   if (requiredRoles && requiredRoles.length > 0) {
     const hasRequiredRole = requiredRoles.includes(authStore.userRole)
+    
     if (!hasRequiredRole) {
       // Redirect to unauthorized page or show error
       return next({
@@ -75,6 +81,7 @@ router.beforeEach(async (to, from, next) => {
     const hasRequiredPermission = requiredPermissions.some(permission => 
       authStore.userPermissions.includes(permission)
     )
+    
     if (!hasRequiredPermission) {
       // Redirect to unauthorized page or show error
       return next({

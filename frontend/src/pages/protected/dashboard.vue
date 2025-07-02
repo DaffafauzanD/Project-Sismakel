@@ -5,8 +5,8 @@ definePage({
   meta: {
     layout: 'default',
     requiresAuth: true,
-    role: ['ADMIN', 'user', 'moderator'],
-    permission: ['user.read'],
+    roles: ['ADMIN'],
+    permissions: ['user.read'],
   },
 })
 

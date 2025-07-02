@@ -16,7 +16,6 @@ export default defineNuxtRouteMiddleware((to) => {
   if (requiresAuth && !authStore.isAuthenticated) {
     // Try to verify token from cookie
     const isValid = authStore.verifyToken()
-    console.log("isValid ::", isValid);
     if (!isValid) {
       // Redirect to login with return URL
       return navigateTo({
