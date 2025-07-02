@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model MST_PERMISSION {
+  id                  String                @id(map: "PK_PERMISSION") @default(dbgenerated("newid()"), map: "DF__MST_PERMISSI__id__49C3F6B7") @db.UniqueIdentifier
+  name                String                @db.NVarChar(255)
+  create_at           DateTime?             @default(now(), map: "DF__MST_PERMI__creat__4AB81AF0")
+  update_at           DateTime?
+  create_by           String?               @db.NVarChar(100)
+  update_by           String?               @db.NVarChar(100)
+  MST_ROLE_PERMISSION MST_ROLE_PERMISSION[]
+}
+
+model MST_ROLE {
+  id                  String                @id(map: "PK__Role__3213E83F5A7CE42E") @default(dbgenerated("newid()"), map: "DF__MST_ROLE__id__3E52440B") @db.UniqueIdentifier
+  name                String                @unique(map: "UQ__Role__72E12F1B752E3AAA") @db.NVarChar(100)
+  create_at           DateTime              @default(now(), map: "DF__MST_ROLE__create__3F466844")
+  update_at           DateTime?
+  create_by           String?               @db.NVarChar(100)
+  update_by           String?               @db.NVarChar(100)
+  MST_ROLE_PERMISSION MST_ROLE_PERMISSION[]
+  MST_USER            MST_USER[]
+}
+
+model MST_ROLE_PERMISSION {
+  id             String         @id(map: "PK_ROLE_PERMISSION") @default(dbgenerated("newid()"), map: "DF__MST_ROLE_PER__id__5441852A") @db.UniqueIdentifier
+  id_role        String         @db.UniqueIdentifier
+  id_permission  String         @db.UniqueIdentifier
+  create_at      DateTime?      @default(now(), map: "DF__MST_ROLE___creat__5535A963")
+  update_at      DateTime?
+  create_by      String?        @db.NVarChar(100)
+  update_by      String?        @db.NVarChar(100)
+  MST_ROLE       MST_ROLE       @relation(fields: [id_role], references: [id], onUpdate: NoAction, map: "FK_ROLE")
+  MST_PERMISSION MST_PERMISSION @relation(fields: [id_permission], references: [id], onUpdate: NoAction, map: "MST_ROLE_PERMISSION_MST_PERMISSION_FK")
+}
+
+model MST_USER {
+  id        String    @id(map: "PK__User__3213E83F4BBF2674") @default(dbgenerated("newid()"), map: "DF__MST_USER__id__4E88ABD4") @db.UniqueIdentifier
+  username  String    @unique(map: "UQ__User__F3DBC572DA2082F0") @db.NVarChar(255)
+  password  String    @db.NVarChar(255)
+  id_role   String    @db.UniqueIdentifier
+  create_at DateTime? @default(now(), map: "DF__MST_USER__create__4F7CD00D")
+  update_at DateTime?
+  create_by String?   @db.NVarChar(100)
+  update_by String?   @db.NVarChar(100)
+  MST_ROLE  MST_ROLE  @relation(fields: [id_role], references: [id], onUpdate: NoAction, map: "User_FK")
+}
