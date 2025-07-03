@@ -54,7 +54,7 @@ class ApiService {
     resource: string,
     slug = "" as string
   ): Promise<AxiosResponse> {
-    return ApiService.vueInstance.axios.get(`${resource}/${slug}`);
+    return ApiService.vueInstance.axios.get(`${resource}/${slug}`, { withCredentials: true });
   }
 
   /**
@@ -64,7 +64,7 @@ class ApiService {
    * @returns Promise<AxiosResponse>
    */
   public static post(resource: string, params: any): Promise<AxiosResponse> {
-    return ApiService.vueInstance.axios.post(`${resource}`, params);
+    return ApiService.vueInstance.axios.post(`${resource}`, params, { withCredentials: true });
   }
 
   /**
@@ -89,7 +89,7 @@ class ApiService {
    * @returns Promise<AxiosResponse>
    */
   public static put(resource: string, params: any): Promise<AxiosResponse> {
-    return ApiService.vueInstance.axios.put(`${resource}`, params);
+    return ApiService.vueInstance.axios.put(`${resource}`, params, { withCredentials: true });
   }
 
   /**
@@ -98,7 +98,7 @@ class ApiService {
    * @returns Promise<AxiosResponse>
    */
   public static delete(resource: string): Promise<AxiosResponse> {
-    return ApiService.vueInstance.axios.delete(resource);
+    return ApiService.vueInstance.axios.delete(resource, { withCredentials: true });
   }
 }
 

@@ -2,7 +2,7 @@
   <!--begin::Row-->
   <div class="row gy-5 g-xl-10">
     <!--begin::Col-->
-    <div class="col-xl-4">
+    <div class="col-xl-4" v-if="hasRole(user, 'ADMIN')">
       <MixedWidget12
         widget-classes="card-xl-stretch mb-xl-10"
         widget-color="#F7D9E3"
@@ -38,6 +38,8 @@ import { defineComponent, onMounted, onUnmounted } from "vue";
 import MixedWidget12 from "@/components/widgets/mixed/Widget12.vue";
 import MixedWidget13 from "@/components/widgets/mixed/Widget13.vue";
 import MixedWidget14 from "@/components/widgets/mixed/Widget14.vue";
+import { hasRole, hasPermission } from "@/core/helpers/authHelpers";
+import { useAuthStore } from "@/stores/auth";
 
 export default defineComponent({
   name: "main-dashboard",
@@ -47,7 +49,12 @@ export default defineComponent({
     MixedWidget14,
   },
   setup() {
-    //TODO
+    const { user } = useAuthStore();
+    return {
+      hasRole,
+      hasPermission,
+      user,
+    }
   },
 });
 </script> 

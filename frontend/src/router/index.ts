@@ -11,9 +11,9 @@ const routes: Array<RouteRecordRaw> = [
     path: "/",
     redirect: "/dashboard",
     component: () => import("@/layouts/default-layout/DefaultLayout.vue"),
-    // meta: {
-    //   middleware: "auth",
-    // },
+    meta: {
+      middleware: "auth",
+    },
     children: [
       {
         path: "/dashboard",
@@ -106,7 +106,7 @@ const router = createRouter({
   },
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   const configStore = useConfigStore();
 
@@ -117,7 +117,10 @@ router.beforeEach((to, from, next) => {
   configStore.resetLayoutConfig();
 
   // verify auth token before each page change
-  authStore.verifyAuth();
+  let isAuthenticated = authStore.isAuthenticated;
+  if(!isAuthenticated){
+    isAuthenticated = await authStore.verifyAuth();
+  }
 
   // before page access check if page requires authentication
   if (to.meta.middleware == "auth") {
