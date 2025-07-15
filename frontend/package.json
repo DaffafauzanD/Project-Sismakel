@@ -23,6 +23,7 @@
     "@fullcalendar/timegrid": "^6.1.18",
     "@fullcalendar/vue3": "^6.1.18",
     "@popperjs/core": "^2.11.8",
+    "@tanstack/vue-table": "^8.21.3",
     "@tinymce/tinymce-vue": "^6.2.0",
     "@vueform/multiselect": "^2.6.11",
     "animate.css": "^4.1.1",

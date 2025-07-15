@@ -11,7 +11,7 @@
       <div class="d-flex flex-column flex-grow-1">
         <!--begin::Title-->
         <a href="#" class="text-gray-900 text-hover-primary fw-bold fs-3"
-          >Earnings</a
+          >Pendapatan</a
         >
         <!--end::Title-->
 
