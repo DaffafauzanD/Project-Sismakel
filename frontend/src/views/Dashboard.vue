@@ -21,6 +21,14 @@
     </div>
     <!--end::Col-->
   </div>
+  <div class="row gy-5 g-xl-10">
+    <!--begin::Col-->
+    <div class="col-xl-12">
+      <TrackProduk widget-classes="card-xxl-stretch mb-xl-10" />
+    </div>
+    <!--end::Col-->
+
+  </div>
   <!--end::Row-->
 </template>
 
@@ -28,6 +36,7 @@
 import { defineComponent, onMounted, onUnmounted } from "vue";
 import MixedWidget12 from "@/components/widgets/mixed/Widget12.vue";
 import MixedWidget13 from "@/components/widgets/mixed/Widget13.vue";
+import TrackProduk from "@/components/widgets/tables/dashboard/TrackProduk.vue";
 import { hasRole, hasPermission } from "@/core/helpers/authHelpers";
 import { useAuthStore } from "@/stores/auth";
 
@@ -35,7 +44,8 @@ export default defineComponent({
   name: "main-dashboard",
   components: {
     MixedWidget12,
-    MixedWidget13
+    MixedWidget13,
+    TrackProduk
   },
   setup() {
     const { user } = useAuthStore();
