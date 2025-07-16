@@ -29,6 +29,11 @@
     <!--end::Col-->
 
   </div>
+  <div class="row gy-5 g-xl-10">
+     <div class="col-xl-12">
+      <TestTableNuxtUi/>
+    </div>
+  </div>
   <!--end::Row-->
 </template>
 
@@ -37,6 +42,7 @@ import { defineComponent, onMounted, onUnmounted } from "vue";
 import MixedWidget12 from "@/components/widgets/mixed/Widget12.vue";
 import MixedWidget13 from "@/components/widgets/mixed/Widget13.vue";
 import TrackProduk from "@/components/widgets/tables/dashboard/TrackProduk.vue";
+import TestTableNuxtUi from "@/components/widgets/tables/dashboard/TestTableNuxtUi.vue";
 import { hasRole, hasPermission } from "@/core/helpers/authHelpers";
 import { useAuthStore } from "@/stores/auth";
 
@@ -45,7 +51,8 @@ export default defineComponent({
   components: {
     MixedWidget12,
     MixedWidget13,
-    TrackProduk
+    TrackProduk,
+    testTableNuxtUi: TestTableNuxtUi,
   },
   setup() {
     const { user } = useAuthStore();

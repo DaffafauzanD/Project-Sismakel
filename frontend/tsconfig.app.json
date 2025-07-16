@@ -1,6 +1,6 @@
 {
   "extends": "./node_modules/@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "auto-imports.d.ts", "components.d.ts"],
   "exclude": ["src/**/__tests__/*", "src/components/HelloWorld.vue", "src/components/TheWelcome.vue", "src/components/WelcomeItem.vue"],
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
