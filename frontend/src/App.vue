@@ -42,9 +42,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <UApp>
-    <RouterView />
-  </UApp>
+  <RouterView />
 </template>
 
 <style lang="scss">

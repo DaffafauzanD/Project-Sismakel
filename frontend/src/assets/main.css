@@ -1,5 +1,0 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
-
-/* Custom CSS untuk integrasi Nuxt UI dengan theme system */
-@import "./nuxt-ui-theme.css";

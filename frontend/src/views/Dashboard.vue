@@ -31,7 +31,7 @@
   </div>
   <div class="row gy-5 g-xl-10">
      <div class="col-xl-12">
-      <TestTableNuxtUi/>
+        <Button>Click me</Button>
     </div>
   </div>
   <!--end::Row-->
@@ -45,6 +45,7 @@ import TrackProduk from "@/components/widgets/tables/dashboard/TrackProduk.vue";
 import TestTableNuxtUi from "@/components/widgets/tables/dashboard/TestTableNuxtUi.vue";
 import { hasRole, hasPermission } from "@/core/helpers/authHelpers";
 import { useAuthStore } from "@/stores/auth";
+import { Button } from '@/components/ui/button'
 
 export default defineComponent({
   name: "main-dashboard",
@@ -52,7 +53,7 @@ export default defineComponent({
     MixedWidget12,
     MixedWidget13,
     TrackProduk,
-    testTableNuxtUi: TestTableNuxtUi,
+    TestTableNuxtUi: TestTableNuxtUi,
   },
   setup() {
     const { user } = useAuthStore();
