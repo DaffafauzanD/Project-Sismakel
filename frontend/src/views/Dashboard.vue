@@ -27,13 +27,16 @@
       <TrackProduk widget-classes="card-xxl-stretch mb-xl-10" />
     </div>
     <!--end::Col-->
+  </div>
 
-  </div>
   <div class="row gy-5 g-xl-10">
-     <div class="col-xl-12">
-        <Button>Click me</Button>
+    <!--begin::Col-->
+    <div class="col-xl-12">
+      <TestTableNuxtUi />
     </div>
+    <!--end::Col-->
   </div>
+  
   <!--end::Row-->
 </template>
 
@@ -45,7 +48,6 @@ import TrackProduk from "@/components/widgets/tables/dashboard/TrackProduk.vue";
 import TestTableNuxtUi from "@/components/widgets/tables/dashboard/TestTableNuxtUi.vue";
 import { hasRole, hasPermission } from "@/core/helpers/authHelpers";
 import { useAuthStore } from "@/stores/auth";
-import { Button } from '@/components/ui/button'
 
 export default defineComponent({
   name: "main-dashboard",

@@ -42,7 +42,9 @@ export default defineComponent({
 </script>
 
 <template>
-  <RouterView />
+  <Suspense>
+    <RouterView />
+  </Suspense>
 </template>
 
 <style lang="scss">
@@ -67,6 +69,7 @@ export default defineComponent({
 @import "assets/sass/element-ui.dark";
 @import "assets/sass/plugins";
 @import "assets/sass/style";
+@import "assets/sass/core/components/reka-ui-theme";
 
 #app {
   display: contents;

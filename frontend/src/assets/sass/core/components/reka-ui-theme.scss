@@ -1,0 +1,129 @@
+//
+// Reka UI Theme Integration
+//
+
+// Mixin untuk styling Reka UI components
+@mixin reka-ui-component-theme($bg-color, $border-color, $text-color, $hover-bg, $focus-color, $active-bg) {
+  background-color: $bg-color;
+  border-color: $border-color;
+  color: $text-color;
+  
+  &:hover {
+    background-color: $hover-bg;
+  }
+  
+  &:focus {
+    outline: 2px solid $focus-color;
+    outline-offset: 2px;
+  }
+  
+  &[data-state="checked"],
+  &[data-state="on"] {
+    background-color: $active-bg;
+    border-color: $active-bg;
+    color: var(--#{$prefix}primary-inverse);
+  }
+}
+
+// Light Mode
+@include color-mode(light) {
+  .reka-checkbox-root {
+    @include reka-ui-component-theme(
+      $bg-color: var(--#{$prefix}body-bg),
+      $border-color: var(--#{$prefix}border-color),
+      $text-color: var(--#{$prefix}text-dark),
+      $hover-bg: var(--#{$prefix}primary-light),
+      $focus-color: var(--#{$prefix}primary),
+      $active-bg: var(--#{$prefix}primary)
+    );
+  }
+  
+  .reka-progress-root {
+    background-color: var(--#{$prefix}gray-200);
+  }
+  
+  .reka-progress-indicator {
+    background-color: var(--#{$prefix}primary);
+  }
+  
+  .reka-toolbar-root {
+    background-color: var(--#{$prefix}body-bg);
+    border: 1px solid var(--#{$prefix}border-color);
+  }
+  
+  .reka-toolbar-item {
+    @include reka-ui-component-theme(
+      $bg-color: transparent,
+      $border-color: transparent,
+      $text-color: var(--#{$prefix}text-muted),
+      $hover-bg: var(--#{$prefix}primary-light),
+      $focus-color: var(--#{$prefix}primary),
+      $active-bg: var(--#{$prefix}primary)
+    );
+  }
+  
+  .reka-separator {
+    background-color: var(--#{$prefix}border-color);
+  }
+}
+
+// Dark Mode - Updated with your specific background color
+@include color-mode(dark) {
+  .reka-checkbox-root {
+    @include reka-ui-component-theme(
+      $bg-color: #15171C, // Your specific dark background
+      $border-color: #26272F, // Slightly lighter for borders
+      $text-color: var(--#{$prefix}text-white),
+      $hover-bg: var(--#{$prefix}primary-light),
+      $focus-color: var(--#{$prefix}primary),
+      $active-bg: var(--#{$prefix}primary)
+    );
+  }
+  
+  .reka-progress-root {
+    background-color: #26272F; // Slightly lighter than main background
+  }
+  
+  .reka-progress-indicator {
+    background-color: var(--#{$prefix}primary);
+  }
+  
+  .reka-toolbar-root {
+    background-color: #15171C; // Your main dark background
+    border: 1px solid #26272F; // Slightly lighter border
+  }
+  
+  .reka-toolbar-item {
+    @include reka-ui-component-theme(
+      $bg-color: transparent,
+      $border-color: transparent,
+      $text-color: var(--#{$prefix}text-muted),
+      $hover-bg: rgba(54, 153, 255, 0.1), // Light primary overlay
+      $focus-color: var(--#{$prefix}primary),
+      $active-bg: var(--#{$prefix}primary)
+    );
+  }
+  
+  .reka-separator {
+    background-color: #26272F; // Slightly lighter for visibility
+  }
+}
+
+// Additional dark theme specific adjustments
+@include color-mode(dark) {
+  // Dark theme card backgrounds for Reka UI containers
+  .reka-ui-container {
+    background-color: #15171C;
+    border-color: #26272F;
+  }
+  
+  // Dark theme text adjustments
+  .reka-ui-text {
+    color: #A1A5B7; // Muted text color for dark theme
+  }
+  
+  // Dark theme shadow adjustments
+  .reka-ui-shadow {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+}
